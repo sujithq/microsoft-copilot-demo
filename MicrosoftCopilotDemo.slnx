@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CopilotAgent/CopilotAgent.csproj" />
+    <Project Path="src/OrchestratorAPI/OrchestratorAPI.csproj" />
+  </Folder>
+</Solution>
