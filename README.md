@@ -2,6 +2,8 @@
 
 This repository implements a headless, code-first GraphRAG architecture for Microsoft 365 Copilot, using .NET 10.
 
+> **📊 Viewing Diagrams**: This documentation includes interactive Mermaid diagrams. View this file on [GitHub](https://github.com/sujithq/microsoft-copilot-demo) to see rendered diagrams. If viewing locally, use a Mermaid-compatible markdown viewer or the [Mermaid Live Editor](https://mermaid.live).
+
 ## Architecture
 
 ```mermaid

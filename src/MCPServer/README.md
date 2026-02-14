@@ -1,5 +1,7 @@
 # GraphRAG MCP Server
 
+> **📊 Viewing Diagrams**: This documentation includes interactive Mermaid diagrams. View on [GitHub](https://github.com/sujithq/microsoft-copilot-demo) to see rendered diagrams.
+
 A Model Context Protocol (MCP) server that provides Microsoft 365 Copilot with access to the GraphRAG knowledge base through standardized tools.
 
 ## What is MCP?

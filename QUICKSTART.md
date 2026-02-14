@@ -1,5 +1,7 @@
 # Quick Start Guide
 
+> **📊 Viewing Diagrams**: This guide includes interactive Mermaid diagrams. View on [GitHub](https://github.com/sujithq/microsoft-copilot-demo) to see rendered diagrams.
+
 Get the GraphRAG demo running in 15 minutes.
 
 ## Prerequisites

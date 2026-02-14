@@ -1,5 +1,7 @@
 # MCP Server Implementation Summary
 
+> **📊 Viewing Diagrams**: This documentation includes interactive Mermaid diagrams. View on [GitHub](https://github.com/sujithq/microsoft-copilot-demo) to see rendered diagrams.
+
 ## Overview
 
 Successfully implemented a Model Context Protocol (MCP) server that enables Microsoft 365 Copilot to access the GraphRAG knowledge base through standardized tools.
