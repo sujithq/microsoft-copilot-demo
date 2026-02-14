@@ -4,6 +4,33 @@
 
 Successfully implemented a Model Context Protocol (MCP) server that enables Microsoft 365 Copilot to access the GraphRAG knowledge base through standardized tools.
 
+## Architecture
+
+```mermaid
+graph LR
+    subgraph "Client Layer"
+        M365[M365 Copilot]
+        Claude[Claude Desktop]
+        Other[Other MCP Clients]
+    end
+    
+    subgraph "MCP Layer"
+        MCP[MCP Server<br/>.NET 10<br/>stdio/JSON-RPC]
+    end
+    
+    subgraph "Backend"
+        Orch[Orchestrator API<br/>GraphRAG Pipeline]
+    end
+    
+    M365 -->|stdio| MCP
+    Claude -->|stdio| MCP
+    Other -->|stdio| MCP
+    MCP -->|HTTP POST| Orch
+    
+    style MCP fill:#107c10,stroke:#0b5a0b,color:#fff
+    style Orch fill:#ff6b00,stroke:#cc5500,color:#fff
+```
+
 ## What Was Built
 
 ### MCP Server (`src/MCPServer/`)
@@ -13,12 +40,6 @@ A .NET 10 console application that:
 - Provides JSON-RPC 2.0 communication over stdio
 - Exposes 3 GraphRAG tools to M365 Copilot
 - Acts as a bridge between MCP clients and the Orchestrator API
-
-### Architecture
-
-```
-M365 Copilot → MCP Server (stdio/JSON-RPC) → Orchestrator API → GraphRAG Backend
-```
 
 ### Key Components
 
@@ -198,6 +219,41 @@ export OrchestratorApi__BaseUrl="https://your-orchestrator.azurewebsites.net"
 2. Client automatically starts server and connects via stdio
 3. Tools become available to the AI assistant
 
+### Usage Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Copilot as M365 Copilot
+    participant MCP as MCP Server
+    participant Orch as Orchestrator
+    participant Backend as GraphRAG Backend
+
+    User->>Copilot: "If Service A fails, what breaks?"
+    
+    Note over Copilot: Determines need for<br/>knowledge base
+    
+    Copilot->>MCP: tools/call: graphrag_query
+    Note over MCP: Parse tool call<br/>parameters
+    
+    MCP->>Orch: POST /api/ask<br/>{query: "..."}
+    
+    Note over Orch,Backend: Execute GraphRAG Pipeline
+    Orch->>Backend: 1. Entity Linking
+    Orch->>Backend: 2. Graph Expansion
+    Orch->>Backend: 3. Hybrid Retrieval
+    Orch->>Backend: 4. Answer Generation
+    Backend-->>Orch: Results
+    
+    Orch-->>MCP: Answer + Citations + Trace
+    Note over MCP: Format as tool result
+    
+    MCP-->>Copilot: Tool result with citations
+    Note over Copilot: Synthesize response
+    
+    Copilot-->>User: "Service A failure affects...<br/>Sources: [1][2]"
+```
+
 ### Usage Examples
 
 **User asks Copilot**: "If Service A fails, what breaks?"
@@ -220,6 +276,50 @@ export OrchestratorApi__BaseUrl="https://your-orchestrator.azurewebsites.net"
 
 ## Files Created
 
+```mermaid
+graph TB
+    subgraph "MCPServer Project"
+        direction TB
+        
+        subgraph "Entry Point"
+            Program[Program.cs<br/>stdio loop, DI setup]
+            Config[appsettings.json<br/>Configuration]
+        end
+        
+        subgraph "Protocol/"
+            McpMsg[McpMessage.cs<br/>JSON-RPC types]
+            McpTool[McpTool.cs<br/>Tool definitions]
+            McpTypes[McpTypes.cs<br/>Capabilities]
+        end
+        
+        subgraph "Models/"
+            OrchestratorModels[OrchestratorModels.cs<br/>API contracts]
+        end
+        
+        subgraph "Services/"
+            Handler[McpServerHandler.cs<br/>Request routing]
+            ToolService[McpToolService.cs<br/>Tool execution]
+            Client[OrchestratorClient.cs<br/>HTTP client]
+        end
+        
+        Docs[README.md<br/>Documentation]
+        
+        Program --> Handler
+        Handler --> ToolService
+        ToolService --> Client
+        Client --> OrchestratorModels
+        Handler --> McpMsg
+        ToolService --> McpTool
+        Handler --> McpTypes
+    end
+    
+    style Program fill:#ff6b00,stroke:#cc5500,color:#fff
+    style Handler fill:#107c10,stroke:#0b5a0b,color:#fff
+    style ToolService fill:#107c10,stroke:#0b5a0b,color:#fff
+    style Client fill:#0078d4,stroke:#005a9e,color:#fff
+```
+
+Directory structure:
 ```
 src/MCPServer/
 ├── MCPServer.csproj              # Project file

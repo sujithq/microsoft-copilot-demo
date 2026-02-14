@@ -253,43 +253,59 @@ See `src/MCPServer/README.md` for detailed MCP server documentation.
 
 ## Architecture Overview
 
+```mermaid
+flowchart TB
+    subgraph ui[" UI Layer "]
+        copilot[Microsoft 365 Copilot]
+    end
+    
+    subgraph integration[" Integration Options "]
+        direction LR
+        agent[Copilot Agent<br/>Bot Framework]
+        mcp[MCP Server<br/>stdio/JSON-RPC]
+    end
+    
+    subgraph backend[" Backend Services "]
+        orch[Orchestrator API<br/>.NET 10<br/>4-Stage Pipeline]
+    end
+    
+    subgraph data[" Data & AI Services "]
+        direction TB
+        cosmos[(Cosmos DB<br/>Graph Store)]
+        search[(AI Search<br/>Hybrid Index)]
+        openai[Azure OpenAI<br/>gpt-5.2]
+    end
+    
+    copilot -->|Bot SDK| agent
+    copilot -->|MCP Tools| mcp
+    agent -->|HTTP POST| orch
+    mcp -->|HTTP POST| orch
+    
+    orch -->|Entity Linking| cosmos
+    orch -->|Graph Expansion| cosmos
+    orch -->|Hybrid Search| search
+    orch -->|Chat Completion| openai
+    
+    style copilot fill:#0078d4,stroke:#005a9e,color:#fff
+    style agent fill:#107c10,stroke:#0b5a0b,color:#fff
+    style mcp fill:#107c10,stroke:#0b5a0b,color:#fff
+    style orch fill:#ff6b00,stroke:#cc5500,color:#fff
+    style cosmos fill:#8661c5,stroke:#6b4fa0,color:#fff
+    style search fill:#fcd116,stroke:#d4ad0a,color:#000
+    style openai fill:#00a4ef,stroke:#0078d4,color:#fff
 ```
-┌─────────────────────────────────────────────────────────┐
-│ Microsoft 365 Copilot (UI Only)                        │
-└────────────┬────────────────────┬────────────────────────┘
-             │                    │
-             │ Bot Framework      │ MCP (stdio)
-             │                    │
-             ▼                    ▼
-      ┌─────────────┐      ┌─────────────┐
-      │ Copilot     │      │ MCP Server  │
-      │ Agent       │      │ (.NET 10)   │
-      └──────┬──────┘      └──────┬──────┘
-             │                    │
-             │ POST /api/ask      │
-             └────────┬───────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────┐
-│ Orchestrator API (.NET 10)                             │
-│ ┌───────────────────────────────────────────────────┐  │
-│ │ 1. Entity Linking    → Find "service-a"          │  │
-│ │ 2. Graph Expansion   → Add "process-x", "team-y" │  │
-│ │ 3. Hybrid Retrieval  → Search with entity filter │  │
-│ │ 4. Answer Generation → Generate with citations   │  │
-│ └───────────────────────────────────────────────────┘  │
-└──┬──────────────┬──────────────┬───────────────────────┘
-   │              │              │
-   ▼              ▼              ▼
-┌────────┐  ┌──────────┐  ┌──────────────┐
-│Cosmos  │  │Azure AI  │  │Azure OpenAI  │
-│DB      │  │Search    │  │(gpt-5.2)     │
-│        │  │          │  │              │
-│Entities│  │Hybrid +  │  │Chat          │
-│Relations│  │Vector   │  │Embeddings    │
-│Chunks  │  │Search    │  │              │
-└────────┘  └──────────┘  └──────────────┘
-```
+
+### Integration Paths
+
+**Option 1: Copilot Agent (Bot Framework)**
+- Direct M365 integration
+- Uses Bot Framework SDK
+- Suitable for enterprise deployments
+
+**Option 2: MCP Server (Model Context Protocol)**
+- Standardized tool interface
+- Works with any MCP client
+- Ideal for multi-client scenarios
 
 ## Next Steps
 

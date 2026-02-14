@@ -4,6 +4,43 @@ This repository implements a headless, code-first GraphRAG architecture for Micr
 
 ## Architecture
 
+```mermaid
+graph TB
+    subgraph "UI Layer"
+        M365[Microsoft 365 Copilot]
+    end
+    
+    subgraph "Integration Layer"
+        Agent[Copilot Agent<br/>Bot Framework]
+        MCP[MCP Server<br/>JSON-RPC/stdio]
+    end
+    
+    subgraph "Orchestrator Layer"
+        Orch[Orchestrator API<br/>.NET 10]
+    end
+    
+    subgraph "Data Layer"
+        Cosmos[(Cosmos DB<br/>Entities, Relations, Chunks)]
+        Search[(Azure AI Search<br/>Hybrid + Vector)]
+        OpenAI[Azure OpenAI<br/>gpt-5.2]
+    end
+    
+    M365 -->|Bot Framework| Agent
+    M365 -->|MCP Tools| MCP
+    Agent -->|POST /api/ask| Orch
+    MCP -->|POST /api/ask| Orch
+    
+    Orch -->|1. Entity Linking| Cosmos
+    Orch -->|2. Graph Expansion| Cosmos
+    Orch -->|3. Hybrid Retrieval| Search
+    Orch -->|4. Answer Generation| OpenAI
+    
+    style M365 fill:#0078d4,stroke:#005a9e,color:#fff
+    style Agent fill:#107c10,stroke:#0b5a0b,color:#fff
+    style MCP fill:#107c10,stroke:#0b5a0b,color:#fff
+    style Orch fill:#ff6b00,stroke:#cc5500,color:#fff
+```
+
 ### UI Layer (Only)
 - **Microsoft 365 Copilot** → Custom Engine Agent (code-first, Microsoft 365 Agents SDK)
 - **Microsoft 365 Copilot** → MCP Server → Orchestrator API (alternative integration path)
@@ -60,6 +97,40 @@ Content-Type: application/json
 ## Orchestrator Workflow (GraphRAG + AI Search)
 
 The headless Orchestrator implements a 4-step workflow:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Copilot as M365 Copilot
+    participant Orch as Orchestrator API
+    participant Cosmos as Cosmos DB
+    participant Search as Azure AI Search
+    participant OpenAI as Azure OpenAI
+
+    User->>Copilot: "If Service A fails, what breaks?"
+    Copilot->>Orch: POST /api/ask
+    
+    Note over Orch: 1. Entity Linking
+    Orch->>Cosmos: Query entities by name/aliases
+    Cosmos-->>Orch: ["service-a"]
+    
+    Note over Orch: 2. Graph Expansion
+    Orch->>Cosmos: Get relations (1-2 hops)
+    Cosmos-->>Orch: ["service-a", "process-x", "team-y"]
+    
+    Note over Orch: 3. Hybrid Retrieval
+    Orch->>Search: Hybrid search + entity filter
+    Search-->>Orch: Top chunks with metadata
+    
+    Note over Orch: 4. Answer Generation
+    Orch->>OpenAI: Generate answer with citations
+    OpenAI-->>Orch: Answer + reasoning
+    
+    Orch-->>Copilot: Answer + Citations + Trace
+    Copilot-->>User: Display answer with sources
+```
+
+**Steps:**
 
 1. **Entity Linking**
    - Extract candidate entities from query

@@ -8,11 +8,40 @@ Model Context Protocol (MCP) is an open protocol that enables AI assistants to s
 
 ## Architecture
 
-```
-M365 Copilot → MCP Server (stdio) → Orchestrator API → GraphRAG Backend
+```mermaid
+sequenceDiagram
+    participant Client as MCP Client<br/>(M365 Copilot)
+    participant MCP as MCP Server<br/>(stdio)
+    participant Orch as Orchestrator API
+    participant Backend as GraphRAG Backend
+
+    Client->>MCP: JSON-RPC: tools/call<br/>graphrag_query
+    activate MCP
+    
+    MCP->>Orch: POST /api/ask
+    activate Orch
+    
+    Orch->>Backend: Execute GraphRAG Pipeline
+    activate Backend
+    Backend-->>Orch: Answer + Citations
+    deactivate Backend
+    
+    Orch-->>MCP: HTTP Response
+    deactivate Orch
+    
+    MCP-->>Client: JSON-RPC: result
+    deactivate MCP
+    
+    Note over Client,Backend: All communication via stdio (JSON-RPC 2.0)
 ```
 
-The MCP server acts as a bridge, translating MCP tool calls into Orchestrator API requests.
+### Communication Flow
+
+1. **MCP Client** (e.g., M365 Copilot) starts MCP server process
+2. **stdio Communication**: Client sends JSON-RPC over stdin, receives responses on stdout
+3. **Tool Execution**: MCP server calls Orchestrator API via HTTP
+4. **GraphRAG Pipeline**: Orchestrator executes entity linking → graph expansion → retrieval → generation
+5. **Response**: Results flow back through the chain to the client
 
 ## Available Tools
 
