@@ -9,6 +9,15 @@ Get the GraphRAG demo running in 15 minutes.
 - ✅ Terraform >= 1.0 installed
 - ✅ Azure subscription with appropriate permissions
 
+## Integration Options
+
+This demo provides **two ways** to integrate with Microsoft 365 Copilot:
+
+1. **Copilot Agent** (Bot Framework): Direct integration using Microsoft 365 Agents SDK
+2. **MCP Server** (Model Context Protocol): Standardized tool interface for M365 Copilot
+
+Choose the integration that best fits your needs. Both use the same Orchestrator API backend.
+
 ## Step 1: Clone and Build (2 minutes)
 
 ```bash
@@ -143,6 +152,80 @@ curl -X POST $APP_URL/api/ask \
   }'
 ```
 
+## Step 8: Test the MCP Server (Optional)
+
+The MCP Server provides a standardized tool interface for M365 Copilot.
+
+### Run the MCP Server
+
+```bash
+cd ../../src/MCPServer
+
+# Configure the Orchestrator URL
+export OrchestratorApi__BaseUrl="http://localhost:5000"
+
+# Start the MCP server
+dotnet run
+```
+
+The server communicates via JSON-RPC over stdio (reads from stdin, writes to stdout).
+
+### Test with JSON-RPC Messages
+
+In another terminal:
+
+```bash
+# Initialize the server
+echo '{"jsonrpc":"2.0","id":"1","method":"initialize","params":{}}' | \
+  dotnet run --project src/MCPServer
+
+# List available tools
+echo '{"jsonrpc":"2.0","id":"2","method":"tools/list","params":{}}' | \
+  dotnet run --project src/MCPServer
+
+# Call the graphrag_query tool
+echo '{"jsonrpc":"2.0","id":"3","method":"tools/call","params":{"name":"graphrag_query","arguments":{"query":"What is Service A?"}}}' | \
+  dotnet run --project src/MCPServer
+```
+
+### Use the Test Script
+
+```bash
+./scripts/test-mcp-server.sh
+```
+
+## Integration with M365 Copilot
+
+### Option 1: Using Copilot Agent
+
+Deploy the Copilot Agent from `src/CopilotAgent/` to connect via Bot Framework. See main README for details.
+
+### Option 2: Using MCP Server
+
+Configure M365 Copilot to use the MCP Server:
+
+1. Add to your MCP configuration:
+```json
+{
+  "mcpServers": {
+    "graphrag": {
+      "command": "dotnet",
+      "args": ["run", "--project", "/path/to/src/MCPServer"],
+      "env": {
+        "OrchestratorApi__BaseUrl": "https://your-orchestrator.azurewebsites.net"
+      }
+    }
+  }
+}
+```
+
+2. M365 Copilot can now use the GraphRAG tools:
+   - `graphrag_query`: Ask questions with full GraphRAG pipeline
+   - `entity_lookup`: Get entity information
+   - `graph_expansion`: Discover relationships
+
+See `src/MCPServer/README.md` for detailed MCP server documentation.
+
 ## Expected Response
 
 ```json
@@ -173,10 +256,20 @@ curl -X POST $APP_URL/api/ask \
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ Microsoft 365 Copilot (UI Only)                        │
-└────────────────┬────────────────────────────────────────┘
-                 │
-                 │ POST /api/ask
-                 ▼
+└────────────┬────────────────────┬────────────────────────┘
+             │                    │
+             │ Bot Framework      │ MCP (stdio)
+             │                    │
+             ▼                    ▼
+      ┌─────────────┐      ┌─────────────┐
+      │ Copilot     │      │ MCP Server  │
+      │ Agent       │      │ (.NET 10)   │
+      └──────┬──────┘      └──────┬──────┘
+             │                    │
+             │ POST /api/ask      │
+             └────────┬───────────┘
+                      │
+                      ▼
 ┌─────────────────────────────────────────────────────────┐
 │ Orchestrator API (.NET 10)                             │
 │ ┌───────────────────────────────────────────────────┐  │

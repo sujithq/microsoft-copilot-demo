@@ -1,6 +1,6 @@
 # Testing Guide for GraphRAG Demo
 
-This guide covers testing the GraphRAG demo implementation.
+This guide covers testing the GraphRAG demo implementation, including the Orchestrator API, Copilot Agent, and MCP Server.
 
 ## Local Testing
 
@@ -74,6 +74,77 @@ Expected response (with configured backend):
     "searchFilter": "entityIds/any(e: e eq 'service-a' or e eq 'team-y')"
   }
 }
+```
+
+### 5. Test MCP Server
+
+The MCP Server provides a Model Context Protocol interface for M365 Copilot.
+
+#### Start MCP Server
+
+```bash
+cd src/MCPServer
+export OrchestratorApi__BaseUrl="http://localhost:5000"
+dotnet run
+```
+
+The server reads JSON-RPC messages from stdin and writes responses to stdout.
+
+#### Test Initialize Method
+
+```bash
+echo '{"jsonrpc":"2.0","id":"1","method":"initialize","params":{}}' | \
+  dotnet run --project src/MCPServer
+```
+
+Expected response:
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "1",
+  "result": {
+    "protocolVersion": "2024-11-05",
+    "capabilities": {
+      "tools": {
+        "listChanged": false
+      }
+    },
+    "serverInfo": {
+      "name": "GraphRAG MCP Server",
+      "version": "1.0.0"
+    }
+  }
+}
+```
+
+#### Test List Tools
+
+```bash
+echo '{"jsonrpc":"2.0","id":"2","method":"tools/list","params":{}}' | \
+  dotnet run --project src/MCPServer
+```
+
+Expected: Returns list of 3 tools (graphrag_query, entity_lookup, graph_expansion)
+
+#### Test Tool Call (requires Orchestrator API running)
+
+```bash
+echo '{"jsonrpc":"2.0","id":"3","method":"tools/call","params":{"name":"graphrag_query","arguments":{"query":"What is Service A?"}}}' | \
+  dotnet run --project src/MCPServer
+```
+
+Expected: Returns tool result with answer and citations
+
+#### Run MCP Test Script
+
+```bash
+./scripts/test-mcp-server.sh
+```
+
+This script tests:
+- Server initialization
+- Tool listing
+- Ping endpoint
 ```
 
 ## Integration Testing
