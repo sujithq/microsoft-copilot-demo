@@ -6,15 +6,20 @@ This repository implements a headless, code-first GraphRAG architecture for Micr
 
 ### UI Layer (Only)
 - **Microsoft 365 Copilot** → Custom Engine Agent (code-first, Microsoft 365 Agents SDK)
+- **Microsoft 365 Copilot** → MCP Server → Orchestrator API (alternative integration path)
 
 ### Headless Backend
-1. **Orchestrator API** (Microsoft Agent Framework, .NET 10)
+1. **MCP Server** (Model Context Protocol, .NET 10) - NEW!
+   - Provides standardized tool interface for M365 Copilot
+   - Exposes GraphRAG capabilities through MCP tools
+   - Communicates via JSON-RPC over stdio
+2. **Orchestrator API** (Microsoft Agent Framework, .NET 10)
    - Owns the workflow: GraphExpand → Retrieve → Answer
-2. **Cosmos DB** (NoSQL)
+3. **Cosmos DB** (NoSQL)
    - Stores entities, relations, and chunks (system of record + graph layer)
-3. **Azure AI Search**
+4. **Azure AI Search**
    - Serving index for chunk retrieval (hybrid + vector)
-4. **Azure AI Foundry**
+5. **Azure AI Foundry**
    - Model endpoint(s): embeddings + chat completion (no UI)
 
 ## Request/Response Flow
@@ -97,6 +102,26 @@ Key components:
 - `CopilotBot`: Bot Framework activity handler
 - `CopilotMessageHandler`: Handles messages and calls the Orchestrator API
 - Models: Request/Response models for Orchestrator communication
+
+### MCPServer (NEW!)
+Located in `src/MCPServer/`
+
+Model Context Protocol server that exposes GraphRAG tools to Microsoft 365 Copilot:
+
+Key components:
+- **Protocol**: MCP JSON-RPC message types and tool definitions
+- **Services**:
+  - `OrchestratorClient`: HTTP client for Orchestrator API
+  - `McpToolService`: Tool implementations (graphrag_query, entity_lookup, graph_expansion)
+  - `McpServerHandler`: JSON-RPC request handler
+- **Communication**: stdio-based (reads JSON-RPC from stdin, writes to stdout)
+
+**Available Tools:**
+1. `graphrag_query`: Full GraphRAG pipeline query with citations
+2. `entity_lookup`: Get information about a specific entity
+3. `graph_expansion`: Discover related entities and relationships
+
+See `src/MCPServer/README.md` for detailed documentation.
 
 ## Configuration
 
