@@ -2,8 +2,6 @@
 # Note: This is for the Orchestrator API only. Cosmos DB, AI Search, and Azure OpenAI
 # are cloud services and cannot be fully emulated locally.
 
-version: '3.8'
-
 services:
   orchestrator-api:
     build:

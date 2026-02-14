@@ -119,7 +119,7 @@ Update `src/OrchestratorAPI/appsettings.json`:
   },
   "AzureOpenAI": {
     "Endpoint": "https://your-openai-resource.openai.azure.com/",
-    "DeploymentName": "gpt-4"
+    "DeploymentName": "gpt-5.2"
   }
 }
 ```

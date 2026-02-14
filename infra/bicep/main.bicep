@@ -1,4 +1,6 @@
 // Main Bicep template for GraphRAG Demo Infrastructure
+// Note: This Bicep template is kept for reference but Terraform is the primary IaC tool
+// Please use infra/terraform/main.tf for deployment
 
 @description('The name of the environment (e.g., dev, test, prod)')
 param environmentName string = 'dev'
@@ -8,6 +10,9 @@ param location string = resourceGroup().location
 
 @description('The name prefix for all resources')
 param namePrefix string = 'graphrag'
+
+@description('The OpenAI deployment name')
+param openaiDeploymentName string = 'gpt-5.2'
 
 // Variables
 var uniqueSuffix = substring(uniqueString(resourceGroup().id), 0, 6)
@@ -160,10 +165,10 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
         }
         {
           name: 'AzureOpenAI__DeploymentName'
-          value: 'gpt-4'
+          value: openaiDeploymentName
         }
       ]
-      netFrameworkVersion: 'v10.0'
+      linuxFxVersion: 'DOTNETCORE|10.0'
     }
   }
 }
