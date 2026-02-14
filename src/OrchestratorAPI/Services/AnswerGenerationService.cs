@@ -16,7 +16,7 @@ public class AnswerGenerationService : IAnswerGenerationService
         ILogger<AnswerGenerationService> logger)
     {
         _openAIClient = openAIClient;
-        _deploymentName = configuration["AzureOpenAI:DeploymentName"] ?? "gpt-4";
+        _deploymentName = configuration["AzureOpenAI:DeploymentName"] ?? "gpt-5.2";
         _logger = logger;
     }
 

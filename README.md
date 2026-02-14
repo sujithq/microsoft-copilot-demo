@@ -158,6 +158,26 @@ No keys in the UI layer.
   - Azure AI Search service
   - Azure OpenAI resource
   - Microsoft 365 tenant with Copilot
+- Terraform >= 1.0 (for infrastructure deployment)
+
+### Deploy Infrastructure with Terraform
+
+```bash
+# Login to Azure
+az login
+
+# Deploy infrastructure
+cd infra
+./deploy.sh dev eastus graphrag
+
+# Or manually with Terraform
+cd infra/terraform
+terraform init
+terraform plan
+terraform apply
+```
+
+See `infra/terraform/README.md` for detailed instructions.
 
 ### Build
 

@@ -39,7 +39,14 @@ node_modules/
 # Terraform
 *.tfstate
 *.tfstate.*
+*.tfvars
+!*.tfvars.example
 .terraform/
+.terraform.lock.hcl
+tfplan
+
+# Deployment configs
+deployment-config-*.env
 
 # OS files
 .DS_Store

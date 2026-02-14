@@ -1,0 +1,9 @@
+# Example Terraform Variables File
+# Copy this file to terraform.tfvars and update with your values
+
+environment = "dev"
+location    = "eastus"
+name_prefix = "graphrag"
+
+# Optional: Specify a different OpenAI deployment name
+# openai_deployment_name = "gpt-5.2"
