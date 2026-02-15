@@ -44,7 +44,7 @@ fi
 
 # Parse arguments
 ENVIRONMENT=${1:-dev}
-LOCATION=${2:-eastus}
+LOCATION=${2:-northeurope}
 NAME_PREFIX=${3:-graphrag}
 
 print_info "Deploying GraphRAG infrastructure with Terraform..."
