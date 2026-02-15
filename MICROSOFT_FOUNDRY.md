@@ -1,35 +1,97 @@
-# Azure AI Foundry Integration
+# Microsoft Foundry Integration
 
-## What is Azure AI Foundry?
+## What is Microsoft Foundry?
 
-**Azure AI Foundry** (formerly known as Azure AI Studio) is Microsoft's unified AI platform that provides:
+**Microsoft Foundry** (formerly Azure AI Foundry, formerly Azure AI Studio) is Microsoft's unified AI platform that provides:
 
-- **Centralized AI Services**: Single account for multiple AI capabilities
+- **Foundry Hub**: Central management resource for AI projects
+- **Foundry Projects**: Isolated workspaces for AI development
 - **Azure OpenAI Models**: GPT-4, GPT-5.2, embeddings, and more
 - **Content Safety**: Built-in content filtering and safety features
-- **Model Management**: Deploy, manage, and monitor AI models
+- **Agent Framework**: Multi-agent orchestration and management
+- **Model Catalog**: Access to OpenAI, Anthropic, Meta, Mistral, and partner models
 - **Unified Billing**: Single billing for all AI services
 
-## Why Azure AI Foundry?
+## Microsoft Foundry Architecture
 
-Azure AI Foundry represents the evolution from standalone Azure OpenAI to a comprehensive AI platform:
+Microsoft Foundry introduces a **hub-project model**:
 
-| Feature | Azure OpenAI (Old) | Azure AI Foundry (New) |
+```
+Microsoft Foundry Hub
+├── Project 1 (Development)
+├── Project 2 (Production)
+└── Project 3 (Testing)
+
+Each project has isolated:
+- Model deployments
+- Datasets and knowledge bases
+- Compute resources
+- Security boundaries
+```
+
+## Why Microsoft Foundry?
+
+Microsoft Foundry represents the evolution to an agent-centric AI platform:
+
+| Feature | Azure OpenAI (Old) | Microsoft Foundry (New) |
 |---------|-------------------|----------------------|
-| **Account Type** | OpenAI-specific | Multi-service (AIServices kind) |
-| **Capabilities** | OpenAI models only | OpenAI + Content Safety + more |
-| **Management** | Separate accounts | Unified platform |
-| **Future-Proof** | Legacy approach | Modern, extensible |
+| **Account Type** | OpenAI-specific | Multi-service + Hub-Project |
+| **Architecture** | Flat account | Hub with nested projects |
+| **Capabilities** | OpenAI models only | OpenAI + Safety + Agents + Multi-model |
+| **Management** | Separate accounts | Unified hub platform |
+| **Project Isolation** | None | Per-project boundaries |
+| **Agent Support** | Limited | First-class citizen |
+| **Future-Proof** | Legacy approach | Modern, agent-centric |
 | **Recommended** | No | ✅ Yes |
+
+## Hub-Project Architecture
+
+Microsoft Foundry uses a hierarchical model:
+
+```
+Microsoft Foundry Hub
+├── Shared Configuration
+│   ├── Networking (VNet integration)
+│   ├── Security (RBAC, managed identity)
+│   └── Governance (policies, quotas)
+│
+├── Project: Development
+│   ├── Model Deployments (gpt-5.2, embeddings)
+│   ├── Datasets and Knowledge
+│   └── Agents and Workflows
+│
+├── Project: Production
+│   ├── Model Deployments
+│   ├── Datasets and Knowledge
+│   └── Agents and Workflows
+│
+└── Project: Testing
+    ├── Model Deployments
+    ├── Datasets and Knowledge
+    └── Agents and Workflows
+```
+
+**Benefits:**
+- **Isolation**: Projects are isolated for security and billing
+- **Shared Infrastructure**: Hub provides common networking and security
+- **Environment Management**: Separate dev/test/prod projects
+- **Cost Tracking**: Per-project cost allocation
 
 ## Implementation in This Project
 
-### Infrastructure (Terraform)
+### Hybrid Approach: Terraform + az cli
 
-The infrastructure uses **Azure AI Services** (kind: `AIServices`) instead of the older OpenAI-only account:
+Since Terraform doesn't fully support Microsoft Foundry hub-project resources, we use:
+
+**Terraform** (`infra/terraform/`):
+- Base AI Services account (foundation for hub)
+- Cosmos DB, Azure AI Search
+- App Service with managed identity
+
+**az cli** (`scripts/provision-foundry.sh`):
 
 ```hcl
-# Azure AI Foundry (Azure AI Services with OpenAI)
+# Microsoft Foundry (Azure AI Services with OpenAI)
 resource "azurerm_cognitive_account" "ai_services" {
   name  = local.openai_account_name
   kind  = "AIServices"  # Multi-service account
@@ -45,22 +107,24 @@ resource "azurerm_cognitive_account" "ai_services" {
 
 ### Code Integration
 
-The .NET code uses `Azure.AI.OpenAI` SDK which works seamlessly with Azure AI Foundry:
+The .NET code uses `Azure.AI.OpenAI` SDK which works seamlessly with Microsoft Foundry:
 
 ```csharp
-// Configure Azure AI Foundry (Azure AI Services with OpenAI)
+// Configure Microsoft Foundry (AI Services hub endpoint)
 builder.Services.AddSingleton(sp =>
 {
-    var endpoint = config["AzureOpenAI:Endpoint"];
+    var endpoint = config["AzureOpenAI:Endpoint"];  // Points to Foundry hub
     var credential = new DefaultAzureCredential();
     return new AzureOpenAIClient(new Uri(endpoint), credential);
 });
 ```
 
 The SDK automatically handles:
-- ✅ Authentication to AI Services account
-- ✅ Model deployment access (gpt-5.2)
+- ✅ Authentication to Foundry hub
+- ✅ Model deployment access (gpt-5.2 within projects)
 - ✅ API versioning and compatibility
+
+**Note**: The endpoint points to the Microsoft Foundry hub. Projects and model deployments are accessed through the hub endpoint with proper scoping.
 
 ### Configuration
 
@@ -68,15 +132,16 @@ The SDK automatically handles:
 ```json
 {
   "AzureOpenAI": {
-    "Endpoint": "https://your-ai-services.openai.azure.com/",
-    "DeploymentName": "gpt-5.2"
+    "Endpoint": "https://your-foundry-hub.openai.azure.com/",
+    "DeploymentName": "gpt-5.2",
+    "Comment": "Endpoint points to Microsoft Foundry hub"
   }
 }
 ```
 
-**Note**: The endpoint URL format is the same whether using AI Services or OpenAI-only accounts.
+## Deployment Guide
 
-## Deployment
+### Step 1: Deploy Base Infrastructure (Terraform)
 
 ### 1. Create AI Services Account
 
@@ -211,14 +276,14 @@ Typical costs for demo:
 
 ## References
 
-- [Azure AI Foundry Documentation](https://learn.microsoft.com/azure/ai-studio/)
+- [Microsoft Foundry Documentation](https://learn.microsoft.com/azure/ai-studio/)
 - [Azure AI Services](https://learn.microsoft.com/azure/ai-services/)
 - [Azure OpenAI Service](https://learn.microsoft.com/azure/ai-services/openai/)
 - [Terraform azurerm_cognitive_account](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cognitive_account)
 
 ## Summary
 
-This project now uses **Azure AI Foundry** through Azure AI Services accounts:
+This project now uses **Microsoft Foundry** through Azure AI Services accounts:
 
 ✅ **Infrastructure**: Terraform creates `AIServices` kind accounts  
 ✅ **Code**: Azure.AI.OpenAI SDK with latest versions  

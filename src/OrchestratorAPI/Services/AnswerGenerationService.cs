@@ -5,8 +5,8 @@ using OpenAI.Chat;
 namespace OrchestratorAPI.Services;
 
 /// <summary>
-/// Service for generating answers using Azure AI Foundry (gpt-5.2).
-/// Azure AI Foundry is a unified AI platform that includes Azure OpenAI capabilities.
+/// Service for generating answers using Microsoft Foundry (gpt-5.2).
+/// Microsoft Foundry is a unified AI platform that includes Azure OpenAI capabilities.
 /// This service connects to an Azure AI Services (AIServices kind) account which provides
 /// access to multiple AI models including GPT-4, GPT-5.2, and embeddings.
 /// </summary>

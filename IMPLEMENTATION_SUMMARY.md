@@ -99,7 +99,7 @@ graph TB
     subgraph "Data Services"
         Cosmos[(Cosmos DB)]
         Search[(AI Search)]
-        OpenAI[Azure AI Foundry]
+        OpenAI[Microsoft Foundry]
     end
     
     M365 -->|Option 1| Agent

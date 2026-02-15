@@ -39,27 +39,28 @@ This creates:
 - Resource Group
 - Cosmos DB with database and containers
 - Azure AI Search service
-- Azure AI Foundry (AI Services account with OpenAI)
+- Microsoft Foundry base (AI Services account)
 - App Service with Managed Identity
 
-Save the output endpoints for the next steps.
+**Next**: Run `scripts/provision-foundry.sh` to set up full Foundry hub with project management.
 
-## Step 3: Deploy Azure AI Foundry Model (3 minutes)
+## Step 3: Provision Microsoft Foundry Hub and Projects (5 minutes)
 
 ```bash
-# Get the AI Services account name from deployment output
-AI_SERVICES_ACCOUNT="<from-output>"
-RESOURCE_GROUP="<from-output>"
+cd ../scripts
 
-az cognitiveservices account deployment create \
-  --name $AI_SERVICES_ACCOUNT \
-  --resource-group $RESOURCE_GROUP \
-  --deployment-name gpt-5.2 \
-  --model-name gpt-5.2 \
-  --model-version latest \
-  --model-format OpenAI \
-  --sku-capacity 10 \
-  --sku-name Standard
+# Get resource group from Terraform
+cd ../infra/terraform
+RESOURCE_GROUP=$(terraform output -raw resource_group_name)
+cd ../../scripts
+
+# Provision Microsoft Foundry hub with projects
+./provision-foundry.sh $RESOURCE_GROUP eastus
+
+# This creates:
+# - Microsoft Foundry Hub with project management
+# - Deploys gpt-5.2 model
+# - Configures RBAC permissions
 ```
 
 ## Step 4: Create Search Index (2 minutes)
@@ -275,7 +276,7 @@ flowchart TB
         direction TB
         cosmos[(Cosmos DB<br/>Graph Store)]
         search[(AI Search<br/>Hybrid Index)]
-        openai[Azure AI Foundry<br/>gpt-5.2]
+        openai[Microsoft Foundry<br/>gpt-5.2]
     end
     
     copilot -->|Bot SDK| agent
@@ -345,7 +346,7 @@ Running this demo:
 - **Production**: ~$200-500/month (depending on usage)
 
 Main costs:
-- Azure AI Foundry: Pay per token (gpt-5.2 model)
+- Microsoft Foundry: Pay per token (gpt-5.2 model)
 - Cosmos DB: $24/month (400 RU/s shared)
 - AI Search: $75/month (Basic tier)
 - App Service: $13/month (B1 tier)

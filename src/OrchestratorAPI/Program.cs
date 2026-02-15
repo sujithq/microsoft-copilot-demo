@@ -31,8 +31,8 @@ builder.Services.AddSingleton(sp =>
     return new SearchClient(new Uri(endpoint), indexName, credential);
 });
 
-// Configure Azure AI Foundry (Azure AI Services with OpenAI)
-// Azure AI Foundry provides unified access to Azure OpenAI models (gpt-5.2, embeddings, etc.)
+// Configure Microsoft Foundry (Azure AI Services with OpenAI)
+// Microsoft Foundry provides unified access to Azure OpenAI models (gpt-5.2, embeddings, etc.)
 // through Azure AI Services accounts
 builder.Services.AddSingleton(sp =>
 {

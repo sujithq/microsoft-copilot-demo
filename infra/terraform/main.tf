@@ -1,9 +1,25 @@
 # GraphRAG Demo - Terraform Configuration
 # 
-# This configuration deploys a complete GraphRAG architecture using Azure AI Foundry.
-# Azure AI Foundry (formerly Azure AI Studio) provides unified access to Azure's AI services
-# including Azure OpenAI models, Content Safety, and other AI capabilities through
-# a single AI Services account.
+# This configuration deploys a complete GraphRAG architecture using Microsoft Foundry.
+# 
+# IMPORTANT: Microsoft Foundry Hub-Project Architecture
+# ======================================================
+# Microsoft Foundry (formerly Azure AI Foundry) uses a hub-project model where:
+# - Hub: Central management resource for AI projects (created via az cli)
+# - Projects: Isolated workspaces under a hub (created via portal or SDK)
+# 
+# Since Terraform doesn't fully support Microsoft Foundry hub-project resources yet,
+# this configuration creates the base AI Services account. Use the provision-foundry.sh
+# script to create the full hub and projects via az cli.
+#
+# Resources created by Terraform:
+# - Base AI Services account (acts as Foundry hub foundation)
+# - Cosmos DB, AI Search, App Service (supporting infrastructure)
+#
+# Resources created by scripts/provision-foundry.sh:
+# - Microsoft Foundry Hub with project management enabled
+# - Microsoft Foundry Projects
+# - Model deployments (gpt-5.2)
 
 terraform {
   required_version = ">= 1.0"
@@ -149,19 +165,22 @@ resource "azurerm_search_service" "main" {
   tags = local.tags
 }
 
-# Azure AI Foundry (Azure AI Services with OpenAI)
-# Using the AI Services multi-service account which includes Azure OpenAI
+# Microsoft Foundry Hub (Base AI Services Account)
+# This creates the foundation for Microsoft Foundry Hub
+# Note: Full hub features require additional provisioning via az cli or portal
+# See scripts/provision-foundry.sh for complete hub setup
 resource "azurerm_cognitive_account" "ai_services" {
   name                = local.openai_account_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  kind                = "AIServices"  # Multi-service account that includes OpenAI, Content Safety, etc.
+  kind                = "AIServices"  # Multi-service account that forms the Foundry hub base
   sku_name            = "S0"
 
   custom_subdomain_name = local.openai_account_name
 
   tags = merge(local.tags, {
-    Service = "Azure AI Foundry"
+    Service = "Microsoft Foundry Hub"
+    Platform = "Microsoft Foundry"
   })
 }
 
@@ -274,8 +293,13 @@ output "search_primary_key" {
 }
 
 output "openai_endpoint" {
-  description = "Azure AI Foundry (AI Services) endpoint"
+  description = "Microsoft Foundry Hub (AI Services) endpoint"
   value       = azurerm_cognitive_account.ai_services.endpoint
+}
+
+output "foundry_hub_name" {
+  description = "Microsoft Foundry Hub name"
+  value       = azurerm_cognitive_account.ai_services.name
 }
 
 output "app_service_url" {

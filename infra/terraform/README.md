@@ -2,6 +2,18 @@
 
 This directory contains Terraform configuration for deploying the GraphRAG demo infrastructure to Azure.
 
+## Microsoft Foundry Note
+
+**Important**: This project now uses **Microsoft Foundry** (formerly Azure AI Foundry). Microsoft Foundry uses a hub-project architecture:
+
+- **Hub**: Central management resource for AI projects
+- **Projects**: Isolated workspaces for AI development
+
+Since Terraform doesn't fully support Microsoft Foundry hub-project resources yet, we use a hybrid approach:
+
+1. **Terraform**: Provisions base resources (AI Services, Cosmos DB, Search, App Service)
+2. **az cli** (`scripts/provision-foundry.sh`): Creates full Foundry hub with project management
+
 ## Prerequisites
 
 - [Terraform](https://www.terraform.io/downloads.html) >= 1.0
@@ -17,10 +29,12 @@ The Terraform configuration creates the following Azure resources:
    - Database: `graphrag`
    - Containers: `entities`, `relations`, `chunks`
 3. **Azure AI Search**: Service for hybrid search (BM25 + vector)
-4. **Azure AI Foundry (AI Services)**: Multi-service cognitive account including Azure OpenAI for embeddings and chat completion
+4. **Microsoft Foundry Hub (Base)**: AI Services account that serves as foundation for Foundry hub with OpenAI capabilities
 5. **App Service Plan**: Linux-based hosting plan (B1 SKU)
 6. **App Service**: Web app for the Orchestrator API with Managed Identity
 7. **Role Assignments**: Managed Identity permissions for accessing Azure services
+
+**Note**: For full Microsoft Foundry hub with project management, run `scripts/provision-foundry.sh` after Terraform deployment.
 
 ## Quick Start
 
@@ -104,7 +118,7 @@ terraform output search_primary_key
 | `cosmos_primary_key` | Cosmos DB primary key (sensitive) |
 | `search_endpoint` | Azure AI Search endpoint URL |
 | `search_primary_key` | Azure AI Search admin key (sensitive) |
-| `openai_endpoint` | Azure AI Foundry (AI Services) endpoint URL |
+| `openai_endpoint` | Microsoft Foundry (AI Services) endpoint URL |
 | `app_service_url` | Orchestrator API URL |
 | `app_service_name` | App Service name |
 | `app_service_principal_id` | Managed Identity Principal ID |
@@ -123,30 +137,27 @@ The Terraform configuration implements the following security best practices:
 The App Service Managed Identity is granted the following roles:
 
 - **Cosmos DB Data Contributor**: Read/write access to Cosmos DB
-- **Cognitive Services OpenAI User**: Access to Azure AI Foundry models
+- **Cognitive Services OpenAI User**: Access to Microsoft Foundry models
 - **Search Index Data Contributor**: Read/write access to search indexes
 
 ## Post-Deployment Steps
 
 After deploying the infrastructure:
 
-1. **Deploy Azure AI Foundry Model**:
+1. **Provision Microsoft Foundry Hub and Projects**:
    ```bash
-   AI_SERVICES_ACCOUNT=$(terraform output -raw openai_endpoint | sed 's|https://||' | sed 's|\.openai\.azure\.com/||')
+   cd ../../scripts
    RESOURCE_GROUP=$(terraform output -raw resource_group_name)
+   LOCATION="eastus"
    
-   az cognitiveservices account deployment create \
-     --name $AI_SERVICES_ACCOUNT \
-     --resource-group $RESOURCE_GROUP \
-     --deployment-name gpt-5.2 \
-     --model-name gpt-5.2 \
-     --model-version "latest" \
-     --model-format OpenAI \
-     --sku-capacity 10 \
-     --sku-name "Standard"
+   # This creates the full Foundry hub with project management
+   ./provision-foundry.sh $RESOURCE_GROUP $LOCATION
    ```
 
-2. **Create Azure AI Search Index**:
+2. **Verify Foundry Hub**:
+   Visit [Microsoft Foundry Portal](https://ai.azure.com) to see your hub and create projects
+
+3. **Create Azure AI Search Index**:
    ```bash
    cd ../../scripts
    SEARCH_ENDPOINT=$(terraform output -raw search_endpoint)
@@ -257,5 +268,6 @@ If resource names are already taken, modify the `name_prefix` variable in `terra
 - [Terraform Azure Provider Documentation](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
 - [Azure Cosmos DB Documentation](https://docs.microsoft.com/en-us/azure/cosmos-db/)
 - [Azure AI Search Documentation](https://docs.microsoft.com/en-us/azure/search/)
-- [Azure AI Foundry Documentation](https://learn.microsoft.com/azure/ai-studio/)
+- [Microsoft Foundry Documentation](https://learn.microsoft.com/azure/ai-foundry/)
+- [Microsoft Foundry Hub-Project Architecture](https://learn.microsoft.com/azure/ai-foundry/concepts/ai-resources)
 - [Azure OpenAI Service Documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/openai/)

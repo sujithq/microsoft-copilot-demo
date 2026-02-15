@@ -24,7 +24,7 @@ graph TB
     subgraph "Data Layer"
         Cosmos[(Cosmos DB<br/>Entities, Relations, Chunks)]
         Search[(Azure AI Search<br/>Hybrid + Vector)]
-        OpenAI[Azure AI Foundry<br/>gpt-5.2]
+        Foundry[Microsoft Foundry<br/>Hub + Projects<br/>gpt-5.2]
     end
     
     M365 -->|Bot Framework| Agent
@@ -35,7 +35,7 @@ graph TB
     Orch -->|1. Entity Linking| Cosmos
     Orch -->|2. Graph Expansion| Cosmos
     Orch -->|3. Hybrid Retrieval| Search
-    Orch -->|4. Answer Generation| OpenAI
+    Orch -->|4. Answer Generation| Foundry
     
     style M365 fill:#0078d4,stroke:#005a9e,color:#fff
     style Agent fill:#107c10,stroke:#0b5a0b,color:#fff
@@ -58,7 +58,7 @@ graph TB
    - Stores entities, relations, and chunks (system of record + graph layer)
 4. **Azure AI Search**
    - Serving index for chunk retrieval (hybrid + vector)
-5. **Azure AI Foundry**
+5. **Microsoft Foundry**
    - Unified AI platform with OpenAI models
    - Model endpoint(s): gpt-5.2 for chat completion
    - Embeddings support for vector search
@@ -110,7 +110,7 @@ sequenceDiagram
     participant Orch as Orchestrator API
     participant Cosmos as Cosmos DB
     participant Search as Azure AI Search
-    participant OpenAI as Azure AI Foundry
+    participant Foundry as Microsoft Foundry
 
     User->>Copilot: "If Service A fails, what breaks?"
     Copilot->>Orch: POST /api/ask
@@ -128,8 +128,8 @@ sequenceDiagram
     Search-->>Orch: Top chunks with metadata
     
     Note over Orch: 4. Answer Generation
-    Orch->>OpenAI: Generate answer with citations
-    OpenAI-->>Orch: Answer + reasoning
+    Orch->>Foundry: Generate answer with citations
+    Foundry-->>Orch: Answer + reasoning
     
     Orch-->>Copilot: Answer + Citations + Trace
     Copilot-->>User: Display answer with sources
@@ -151,7 +151,7 @@ sequenceDiagram
    - Filter: `entityIds/any(e: e eq '...')`
 
 4. **Answer Generation**
-   - Prompt Azure AI Foundry model with:
+   - Prompt Microsoft Foundry model with:
      - Top chunks (with titles/urls)
      - Optional compact graph context
    - Produce answer + citations
@@ -167,7 +167,7 @@ Key components:
   - `EntityLinkingService`: Extracts and matches entities from queries
   - `GraphExpansionService`: Expands entity relationships in Cosmos DB
   - `HybridRetrievalService`: Performs hybrid search in Azure AI Search
-  - `AnswerGenerationService`: Generates answers using Azure AI Foundry (gpt-5.2)
+  - `AnswerGenerationService`: Generates answers using Microsoft Foundry (gpt-5.2)
   - `OrchestratorService`: Orchestrates the entire workflow
 - **Controllers**: REST API endpoints
 
@@ -221,7 +221,7 @@ Update `src/OrchestratorAPI/appsettings.json`:
   "AzureOpenAI": {
     "Endpoint": "https://your-ai-services-resource.openai.azure.com/",
     "DeploymentName": "gpt-5.2",
-    "Comment": "This endpoint is part of Azure AI Foundry (AI Services multi-service account)"
+    "Comment": "This endpoint is part of Microsoft Foundry (AI Services multi-service account)"
   }
 }
 ```
@@ -247,7 +247,7 @@ The Orchestrator uses:
 - **Orchestrator → Azure Resources**: Uses Managed Identity for:
   - Cosmos DB
   - AI Search
-  - Azure OpenAI (Azure AI Foundry endpoint)
+  - Azure OpenAI (Microsoft Foundry endpoint)
 
 No keys in the UI layer.
 

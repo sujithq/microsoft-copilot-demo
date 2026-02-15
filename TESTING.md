@@ -39,7 +39,7 @@ Expected response:
 
 ### 4. Test Ask Endpoint
 
-**Note**: This requires properly configured Azure resources (Cosmos DB, AI Search, Azure AI Foundry).
+**Note**: This requires properly configured Azure resources (Cosmos DB, AI Search, Microsoft Foundry).
 
 ```bash
 curl -X POST http://localhost:5000/api/ask \
@@ -154,7 +154,7 @@ This script tests:
 1. Azure resources deployed via Terraform
 2. Azure AI Search index created
 3. Sample data loaded into Cosmos DB and AI Search
-4. Azure AI Foundry gpt-5.2 model deployed
+4. Microsoft Foundry gpt-5.2 model deployed
 
 ### Test Workflow
 
@@ -322,7 +322,7 @@ az webapp log tail --name <app-name> --resource-group <rg-name>
    - Check: Entity IDs match between Cosmos and Search
 
 3. **OpenAI API Errors**
-   - Check: gpt-5.2 deployment exists in Azure AI Foundry
+   - Check: gpt-5.2 deployment exists in Microsoft Foundry
    - Check: Quota and rate limits
    - Check: Endpoint and credentials
 
