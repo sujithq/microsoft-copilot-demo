@@ -1,4 +1,9 @@
 # GraphRAG Demo - Terraform Configuration
+# 
+# This configuration deploys a complete GraphRAG architecture using Azure AI Foundry.
+# Azure AI Foundry (formerly Azure AI Studio) provides unified access to Azure's AI services
+# including Azure OpenAI models, Content Safety, and other AI capabilities through
+# a single AI Services account.
 
 terraform {
   required_version = ">= 1.0"
@@ -144,18 +149,35 @@ resource "azurerm_search_service" "main" {
   tags = local.tags
 }
 
-# Azure OpenAI
-resource "azurerm_cognitive_account" "openai" {
+# Azure AI Foundry (Azure AI Services with OpenAI)
+# Using the AI Services multi-service account which includes Azure OpenAI
+resource "azurerm_cognitive_account" "ai_services" {
   name                = local.openai_account_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  kind                = "OpenAI"
+  kind                = "AIServices"  # Multi-service account that includes OpenAI, Content Safety, etc.
   sku_name            = "S0"
 
   custom_subdomain_name = local.openai_account_name
 
-  tags = local.tags
+  tags = merge(local.tags, {
+    Service = "Azure AI Foundry"
+  })
 }
+
+# Alternative: Keep OpenAI-specific account for backwards compatibility
+# Uncomment if you need just OpenAI instead of full AI Services
+# resource "azurerm_cognitive_account" "openai" {
+#   name                = local.openai_account_name
+#   location            = azurerm_resource_group.main.location
+#   resource_group_name = azurerm_resource_group.main.name
+#   kind                = "OpenAI"
+#   sku_name            = "S0"
+#
+#   custom_subdomain_name = local.openai_account_name
+#
+#   tags = local.tags
+# }
 
 # App Service Plan
 resource "azurerm_service_plan" "main" {
@@ -193,7 +215,7 @@ resource "azurerm_linux_web_app" "main" {
     "CosmosDb__ChunksContainerId"   = azurerm_cosmosdb_sql_container.chunks.name
     "AzureSearch__Endpoint"        = "https://${azurerm_search_service.main.name}.search.windows.net"
     "AzureSearch__IndexName"       = "chunks"
-    "AzureOpenAI__Endpoint"        = azurerm_cognitive_account.openai.endpoint
+    "AzureOpenAI__Endpoint"        = azurerm_cognitive_account.ai_services.endpoint
     "AzureOpenAI__DeploymentName"  = var.openai_deployment_name
   }
 
@@ -211,7 +233,7 @@ resource "azurerm_cosmosdb_sql_role_assignment" "app_service" {
 
 # Role Assignment: Cognitive Services OpenAI User for App Service
 resource "azurerm_role_assignment" "openai_user" {
-  scope                = azurerm_cognitive_account.openai.id
+  scope                = azurerm_cognitive_account.ai_services.id
   role_definition_name = "Cognitive Services OpenAI User"
   principal_id         = azurerm_linux_web_app.main.identity[0].principal_id
 }
@@ -252,8 +274,8 @@ output "search_primary_key" {
 }
 
 output "openai_endpoint" {
-  description = "Azure OpenAI endpoint"
-  value       = azurerm_cognitive_account.openai.endpoint
+  description = "Azure AI Foundry (AI Services) endpoint"
+  value       = azurerm_cognitive_account.ai_services.endpoint
 }
 
 output "app_service_url" {

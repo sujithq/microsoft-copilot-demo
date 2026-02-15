@@ -24,7 +24,7 @@ graph TB
     subgraph "Data Layer"
         Cosmos[(Cosmos DB<br/>Entities, Relations, Chunks)]
         Search[(Azure AI Search<br/>Hybrid + Vector)]
-        OpenAI[Azure OpenAI<br/>gpt-5.2]
+        OpenAI[Azure AI Foundry<br/>gpt-5.2]
     end
     
     M365 -->|Bot Framework| Agent
@@ -59,7 +59,10 @@ graph TB
 4. **Azure AI Search**
    - Serving index for chunk retrieval (hybrid + vector)
 5. **Azure AI Foundry**
-   - Model endpoint(s): embeddings + chat completion (no UI)
+   - Unified AI platform with OpenAI models
+   - Model endpoint(s): gpt-5.2 for chat completion
+   - Embeddings support for vector search
+   - Deployed as Azure AI Services (multi-service cognitive account)
 
 ## Request/Response Flow
 
@@ -107,7 +110,7 @@ sequenceDiagram
     participant Orch as Orchestrator API
     participant Cosmos as Cosmos DB
     participant Search as Azure AI Search
-    participant OpenAI as Azure OpenAI
+    participant OpenAI as Azure AI Foundry
 
     User->>Copilot: "If Service A fails, what breaks?"
     Copilot->>Orch: POST /api/ask
@@ -148,7 +151,7 @@ sequenceDiagram
    - Filter: `entityIds/any(e: e eq '...')`
 
 4. **Answer Generation**
-   - Prompt Foundry model with:
+   - Prompt Azure AI Foundry model with:
      - Top chunks (with titles/urls)
      - Optional compact graph context
    - Produce answer + citations
@@ -164,7 +167,7 @@ Key components:
   - `EntityLinkingService`: Extracts and matches entities from queries
   - `GraphExpansionService`: Expands entity relationships in Cosmos DB
   - `HybridRetrievalService`: Performs hybrid search in Azure AI Search
-  - `AnswerGenerationService`: Generates answers using Azure OpenAI
+  - `AnswerGenerationService`: Generates answers using Azure AI Foundry (gpt-5.2)
   - `OrchestratorService`: Orchestrates the entire workflow
 - **Controllers**: REST API endpoints
 
@@ -216,8 +219,9 @@ Update `src/OrchestratorAPI/appsettings.json`:
     "IndexName": "chunks"
   },
   "AzureOpenAI": {
-    "Endpoint": "https://your-openai-resource.openai.azure.com/",
-    "DeploymentName": "gpt-5.2"
+    "Endpoint": "https://your-ai-services-resource.openai.azure.com/",
+    "DeploymentName": "gpt-5.2",
+    "Comment": "This endpoint is part of Azure AI Foundry (AI Services multi-service account)"
   }
 }
 ```
@@ -243,7 +247,7 @@ The Orchestrator uses:
 - **Orchestrator → Azure Resources**: Uses Managed Identity for:
   - Cosmos DB
   - AI Search
-  - Azure OpenAI (Foundry endpoint)
+  - Azure OpenAI (Azure AI Foundry endpoint)
 
 No keys in the UI layer.
 

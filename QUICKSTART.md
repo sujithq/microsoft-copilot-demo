@@ -39,20 +39,20 @@ This creates:
 - Resource Group
 - Cosmos DB with database and containers
 - Azure AI Search service
-- Azure OpenAI account
+- Azure AI Foundry (AI Services account with OpenAI)
 - App Service with Managed Identity
 
 Save the output endpoints for the next steps.
 
-## Step 3: Deploy Azure OpenAI Model (3 minutes)
+## Step 3: Deploy Azure AI Foundry Model (3 minutes)
 
 ```bash
-# Get the OpenAI account name from deployment output
-OPENAI_ACCOUNT="<from-output>"
+# Get the AI Services account name from deployment output
+AI_SERVICES_ACCOUNT="<from-output>"
 RESOURCE_GROUP="<from-output>"
 
 az cognitiveservices account deployment create \
-  --name $OPENAI_ACCOUNT \
+  --name $AI_SERVICES_ACCOUNT \
   --resource-group $RESOURCE_GROUP \
   --deployment-name gpt-5.2 \
   --model-name gpt-5.2 \
@@ -275,7 +275,7 @@ flowchart TB
         direction TB
         cosmos[(Cosmos DB<br/>Graph Store)]
         search[(AI Search<br/>Hybrid Index)]
-        openai[Azure OpenAI<br/>gpt-5.2]
+        openai[Azure AI Foundry<br/>gpt-5.2]
     end
     
     copilot -->|Bot SDK| agent
@@ -345,7 +345,7 @@ Running this demo:
 - **Production**: ~$200-500/month (depending on usage)
 
 Main costs:
-- Azure OpenAI: Pay per token (gpt-5.2)
+- Azure AI Foundry: Pay per token (gpt-5.2 model)
 - Cosmos DB: $24/month (400 RU/s shared)
 - AI Search: $75/month (Basic tier)
 - App Service: $13/month (B1 tier)

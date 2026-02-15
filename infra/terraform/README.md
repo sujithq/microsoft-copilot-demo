@@ -17,7 +17,7 @@ The Terraform configuration creates the following Azure resources:
    - Database: `graphrag`
    - Containers: `entities`, `relations`, `chunks`
 3. **Azure AI Search**: Service for hybrid search (BM25 + vector)
-4. **Azure OpenAI**: Cognitive service for embeddings and chat completion
+4. **Azure AI Foundry (AI Services)**: Multi-service cognitive account including Azure OpenAI for embeddings and chat completion
 5. **App Service Plan**: Linux-based hosting plan (B1 SKU)
 6. **App Service**: Web app for the Orchestrator API with Managed Identity
 7. **Role Assignments**: Managed Identity permissions for accessing Azure services
@@ -104,7 +104,7 @@ terraform output search_primary_key
 | `cosmos_primary_key` | Cosmos DB primary key (sensitive) |
 | `search_endpoint` | Azure AI Search endpoint URL |
 | `search_primary_key` | Azure AI Search admin key (sensitive) |
-| `openai_endpoint` | Azure OpenAI endpoint URL |
+| `openai_endpoint` | Azure AI Foundry (AI Services) endpoint URL |
 | `app_service_url` | Orchestrator API URL |
 | `app_service_name` | App Service name |
 | `app_service_principal_id` | Managed Identity Principal ID |
@@ -123,20 +123,20 @@ The Terraform configuration implements the following security best practices:
 The App Service Managed Identity is granted the following roles:
 
 - **Cosmos DB Data Contributor**: Read/write access to Cosmos DB
-- **Cognitive Services OpenAI User**: Access to Azure OpenAI models
+- **Cognitive Services OpenAI User**: Access to Azure AI Foundry models
 - **Search Index Data Contributor**: Read/write access to search indexes
 
 ## Post-Deployment Steps
 
 After deploying the infrastructure:
 
-1. **Deploy Azure OpenAI Model**:
+1. **Deploy Azure AI Foundry Model**:
    ```bash
-   OPENAI_ACCOUNT=$(terraform output -raw openai_endpoint | sed 's|https://||' | sed 's|\.openai\.azure\.com/||')
+   AI_SERVICES_ACCOUNT=$(terraform output -raw openai_endpoint | sed 's|https://||' | sed 's|\.openai\.azure\.com/||')
    RESOURCE_GROUP=$(terraform output -raw resource_group_name)
    
    az cognitiveservices account deployment create \
-     --name $OPENAI_ACCOUNT \
+     --name $AI_SERVICES_ACCOUNT \
      --resource-group $RESOURCE_GROUP \
      --deployment-name gpt-5.2 \
      --model-name gpt-5.2 \
@@ -257,4 +257,5 @@ If resource names are already taken, modify the `name_prefix` variable in `terra
 - [Terraform Azure Provider Documentation](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
 - [Azure Cosmos DB Documentation](https://docs.microsoft.com/en-us/azure/cosmos-db/)
 - [Azure AI Search Documentation](https://docs.microsoft.com/en-us/azure/search/)
-- [Azure OpenAI Documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/openai/)
+- [Azure AI Foundry Documentation](https://learn.microsoft.com/azure/ai-studio/)
+- [Azure OpenAI Service Documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/openai/)
