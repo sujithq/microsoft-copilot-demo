@@ -1,0 +1,44 @@
+[
+  {
+    "id": "rel-1",
+    "sourceEntityId": "service-a",
+    "targetEntityId": "process-x",
+    "relationType": "depends_on",
+    "evidenceChunkIds": ["doc1#chunk1", "doc2#chunk3"]
+  },
+  {
+    "id": "rel-2",
+    "sourceEntityId": "process-x",
+    "targetEntityId": "team-y",
+    "relationType": "owned_by",
+    "evidenceChunkIds": ["doc3#chunk2"]
+  },
+  {
+    "id": "rel-3",
+    "sourceEntityId": "service-a",
+    "targetEntityId": "team-y",
+    "relationType": "escalates_to",
+    "evidenceChunkIds": ["doc1#chunk2", "doc4#chunk1"]
+  },
+  {
+    "id": "rel-4",
+    "sourceEntityId": "service-a",
+    "targetEntityId": "database-z",
+    "relationType": "uses",
+    "evidenceChunkIds": ["doc2#chunk1"]
+  },
+  {
+    "id": "rel-5",
+    "sourceEntityId": "database-z",
+    "targetEntityId": "team-y",
+    "relationType": "maintained_by",
+    "evidenceChunkIds": ["doc5#chunk1"]
+  },
+  {
+    "id": "rel-6",
+    "sourceEntityId": "service-b",
+    "targetEntityId": "service-a",
+    "relationType": "calls",
+    "evidenceChunkIds": ["doc6#chunk2"]
+  }
+]

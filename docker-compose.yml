@@ -1,0 +1,27 @@
+# Docker Compose for Local Development
+# Note: This is for the Orchestrator API only. Cosmos DB, AI Search, and Azure OpenAI
+# are cloud services and cannot be fully emulated locally.
+
+services:
+  orchestrator-api:
+    build:
+      context: .
+      dockerfile: src/OrchestratorAPI/Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      # Azure service endpoints (configure these with your values)
+      - CosmosDb__Endpoint=${COSMOS_ENDPOINT}
+      - AzureSearch__Endpoint=${SEARCH_ENDPOINT}
+      - AzureOpenAI__Endpoint=${OPENAI_ENDPOINT}
+      - AzureOpenAI__DeploymentName=${OPENAI_DEPLOYMENT}
+    volumes:
+      - ~/.azure:/root/.azure:ro
+    networks:
+      - graphrag-network
+
+networks:
+  graphrag-network:
+    driver: bridge

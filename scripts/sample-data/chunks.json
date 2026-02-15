@@ -1,0 +1,58 @@
+[
+  {
+    "id": "doc1#chunk1",
+    "content": "Service A is a critical microservice that processes customer orders. It depends on Process X for order validation and enrichment. Service A runs on containerized infrastructure with auto-scaling capabilities.",
+    "title": "Service A Architecture Documentation",
+    "url": "https://docs.example.com/services/service-a/architecture",
+    "entityIds": ["service-a", "process-x"]
+  },
+  {
+    "id": "doc1#chunk2",
+    "content": "For Service A incidents and outages, the primary escalation point is Team Y. They can be reached via email at team-y@example.com or through the on-call rotation at +1-555-0100. Response SLA is 15 minutes for P1 incidents.",
+    "title": "Service A Runbook - Escalation Procedures",
+    "url": "https://docs.example.com/services/service-a/runbook#escalation",
+    "entityIds": ["service-a", "team-y"]
+  },
+  {
+    "id": "doc2#chunk1",
+    "content": "Service A uses Database Z as its primary data store. All customer order data is persisted in this PostgreSQL database. The connection pool is configured with a maximum of 100 connections.",
+    "title": "Service A Data Architecture",
+    "url": "https://docs.example.com/services/service-a/data",
+    "entityIds": ["service-a", "database-z"]
+  },
+  {
+    "id": "doc2#chunk3",
+    "content": "Process X is invoked by Service A through a synchronous REST API call. The process validates order details, checks inventory, and enriches the order with customer preferences from the CRM system.",
+    "title": "Process X Integration Guide",
+    "url": "https://docs.example.com/processes/process-x/integration",
+    "entityIds": ["service-a", "process-x"]
+  },
+  {
+    "id": "doc3#chunk2",
+    "content": "Team Y owns and maintains Process X. They are responsible for monitoring, updates, and performance optimization. The team meets weekly to review process metrics and plan improvements.",
+    "title": "Process X Ownership and Responsibilities",
+    "url": "https://docs.example.com/processes/process-x/ownership",
+    "entityIds": ["process-x", "team-y"]
+  },
+  {
+    "id": "doc4#chunk1",
+    "content": "Critical Service A failures require immediate escalation to Team Y. Common failure scenarios include database connection issues, Process X timeouts, and memory exhaustion. The runbook provides detailed troubleshooting steps for each scenario.",
+    "title": "Service A Failure Scenarios",
+    "url": "https://docs.example.com/services/service-a/failures",
+    "entityIds": ["service-a", "team-y", "process-x"]
+  },
+  {
+    "id": "doc5#chunk1",
+    "content": "Database Z is maintained by Team Y with daily automated backups and weekly maintenance windows. The database runs on Azure Database for PostgreSQL with high availability configuration and automatic failover.",
+    "title": "Database Z Maintenance Guide",
+    "url": "https://docs.example.com/databases/database-z/maintenance",
+    "entityIds": ["database-z", "team-y"]
+  },
+  {
+    "id": "doc6#chunk2",
+    "content": "Service B calls Service A for order processing operations. The integration uses REST APIs with OAuth 2.0 authentication. Retry logic is implemented with exponential backoff to handle transient failures.",
+    "title": "Service B to Service A Integration",
+    "url": "https://docs.example.com/services/service-b/integrations#service-a",
+    "entityIds": ["service-b", "service-a"]
+  }
+]

@@ -1,0 +1,54 @@
+[
+  {
+    "id": "service-a",
+    "name": "Service A",
+    "type": "service",
+    "aliases": ["ServiceA", "Svc-A", "Service Alpha"],
+    "metadata": {
+      "owner": "team-x",
+      "criticality": "high",
+      "region": "us-east"
+    }
+  },
+  {
+    "id": "service-b",
+    "name": "Service B",
+    "type": "service",
+    "aliases": ["ServiceB", "Svc-B", "Service Beta"],
+    "metadata": {
+      "owner": "team-z",
+      "criticality": "medium",
+      "region": "us-west"
+    }
+  },
+  {
+    "id": "process-x",
+    "name": "Process X",
+    "type": "process",
+    "aliases": ["ProcessX", "Proc-X", "Workflow X"],
+    "metadata": {
+      "sla": "99.9%",
+      "frequency": "daily"
+    }
+  },
+  {
+    "id": "team-y",
+    "name": "Team Y",
+    "type": "team",
+    "aliases": ["TeamY", "Infrastructure Team"],
+    "metadata": {
+      "email": "team-y@example.com",
+      "oncall": "+1-555-0100"
+    }
+  },
+  {
+    "id": "database-z",
+    "name": "Database Z",
+    "type": "database",
+    "aliases": ["DatabaseZ", "DB-Z", "Storage Z"],
+    "metadata": {
+      "type": "PostgreSQL",
+      "backup": "daily"
+    }
+  }
+]
