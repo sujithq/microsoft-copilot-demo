@@ -11,6 +11,7 @@ Welcome to the Microsoft Copilot GraphRAG Demo documentation. This index helps y
 
 - **[README.md - Architecture Section](README.md#architecture)** - High-level architecture with Mermaid diagrams
 - **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Complete implementation summary
+- **[AZURE_AI_FOUNDRY.md](AZURE_AI_FOUNDRY.md)** - Azure AI Foundry integration guide
 
 ## 🔧 MCP Server
 
@@ -55,8 +56,9 @@ Start here:
 
 Start here:
 1. [README.md](README.md) - Architecture overview
-2. [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Implementation details
-3. [MCP_IMPLEMENTATION.md](MCP_IMPLEMENTATION.md) - Technical architecture
+2. [AZURE_AI_FOUNDRY.md](AZURE_AI_FOUNDRY.md) - Azure AI Foundry integration
+3. [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Implementation details
+4. [MCP_IMPLEMENTATION.md](MCP_IMPLEMENTATION.md) - Technical architecture
 
 ### For DevOps
 
@@ -78,6 +80,7 @@ microsoft-copilot-demo/
 ├── README.md                      ⭐ Start here
 ├── QUICKSTART.md                  🚀 15-minute setup
 ├── TESTING.md                     🧪 Testing guide
+├── AZURE_AI_FOUNDRY.md            🤖 AI Foundry integration
 ├── IMPLEMENTATION_SUMMARY.md      📋 What was built
 ├── MCP_CONFIG.md                  ⚙️ MCP configuration
 ├── MCP_IMPLEMENTATION.md          🔧 MCP technical details
@@ -108,7 +111,7 @@ microsoft-copilot-demo/
 → See [MCP_CONFIG.md](MCP_CONFIG.md)
 
 #### Understand the architecture
-→ See [README.md - Architecture](README.md#architecture)
+→ See [README.md - Architecture](README.md#architecture) and [AZURE_AI_FOUNDRY.md](AZURE_AI_FOUNDRY.md)
 
 #### Test the system
 → See [TESTING.md](TESTING.md)
