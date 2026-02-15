@@ -32,7 +32,7 @@ dotnet build
 
 ```bash
 cd infra
-./deploy.sh dev eastus mycompany
+./deploy.sh dev northeurope mycompany
 ```
 
 This creates:
@@ -55,7 +55,7 @@ RESOURCE_GROUP=$(terraform output -raw resource_group_name)
 cd ../../scripts
 
 # Provision Microsoft Foundry hub with projects
-./provision-foundry.sh $RESOURCE_GROUP eastus
+./provision-foundry.sh $RESOURCE_GROUP northeurope
 
 # This creates:
 # - Microsoft Foundry Hub with project management

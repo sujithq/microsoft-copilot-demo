@@ -64,7 +64,7 @@ Edit `terraform.tfvars`:
 
 ```hcl
 environment = "dev"
-location    = "eastus"
+location    = "northeurope"
 name_prefix = "graphrag"
 openai_deployment_name = "gpt-5.2"
 ```
@@ -105,7 +105,7 @@ terraform output search_primary_key
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
 | `environment` | Environment name (dev, test, prod) | `dev` | No |
-| `location` | Azure region | `eastus` | No |
+| `location` | Azure region | `northeurope` | No |
 | `name_prefix` | Prefix for resource names | `graphrag` | No |
 | `openai_deployment_name` | OpenAI model deployment name | `gpt-5.2` | No |
 
@@ -148,7 +148,7 @@ After deploying the infrastructure:
    ```bash
    cd ../../scripts
    RESOURCE_GROUP=$(terraform output -raw resource_group_name)
-   LOCATION="eastus"
+   LOCATION="northeurope"
    
    # This creates the full Foundry hub with project management
    ./provision-foundry.sh $RESOURCE_GROUP $LOCATION
@@ -202,7 +202,7 @@ For team collaboration, use Azure Storage for remote state:
    az storage account create \
      --name tfstate$RANDOM \
      --resource-group terraform-state-rg \
-     --location eastus \
+     --location northeurope \
      --sku Standard_LRS
    
    az storage container create \

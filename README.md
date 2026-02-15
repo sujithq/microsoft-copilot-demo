@@ -270,7 +270,7 @@ az login
 
 # Deploy infrastructure
 cd infra
-./deploy.sh dev eastus graphrag
+./deploy.sh dev northeurope graphrag
 
 # Or manually with Terraform
 cd infra/terraform

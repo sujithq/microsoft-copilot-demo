@@ -43,7 +43,7 @@ fi
 
 # Parse arguments
 RESOURCE_GROUP=${1:-"graphrag-dev-rg"}
-LOCATION=${2:-"eastus"}
+LOCATION=${2:-"northeurope"}
 HUB_NAME=${3:-"graphrag-foundry-hub"}
 PROJECT_NAME=${4:-"graphrag-project"}
 

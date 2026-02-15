@@ -2,7 +2,7 @@
 # Copy this file to terraform.tfvars and update with your values
 
 environment = "dev"
-location    = "eastus"
+location    = "northeurope"
 name_prefix = "graphrag"
 
 # Optional: Specify a different OpenAI deployment name
